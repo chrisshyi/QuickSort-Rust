@@ -85,9 +85,7 @@ fn main() {
     let mut line = String::new();
     let mut num_bytes = buf_reader.read_line(&mut line).expect("line reading error");
     while num_bytes > 0 {
-        line = line.trim().to_string();
-
-        data_vec.push(line.parse::<i32>().unwrap());
+        data_vec.push(line.trim().parse::<i32>().unwrap()); // trim off trailing newline characters 
         line.clear();
         num_bytes = buf_reader.read_line(&mut line).expect("line reading error");
     }

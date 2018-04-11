@@ -2,7 +2,7 @@ use std::vec::Vec;
 
 fn quick_sort(data: &mut [i32]) {
     println!("length of data: {}", data.len());
-    if data.len() == 1 || data.len() == 0 {
+    if data.len() == 1 {
         return;
     }
     let pivot_index: i32 = choose_pivot(data);
@@ -13,19 +13,25 @@ fn quick_sort(data: &mut [i32]) {
     }
     
     let (left_portion, right_portion) = data.split_at_mut(final_pivot_index as usize);
-    if let Some((_first, real_right_portion)) = right_portion.split_first_mut() {
-        println!("Right portion: ");
-        for elem in real_right_portion.iter() {
-            println!("{}", elem);
-        }
-        quick_sort(real_right_portion); // don't recurse if the right portion is empty 
-    }
 
+    if right_portion.len() > 1 {
+        if let Some((_first, real_right_portion)) = right_portion.split_first_mut() {
+            println!("Right portion: ");
+            for elem in real_right_portion.iter() {
+                println!("{}", elem);
+            }
+            quick_sort(real_right_portion); // don't recurse if the right portion is empty 
+        }
+    } else {
+        quick_sort(right_portion);
+    }
     println!("Left portion: ");
     for elem in left_portion.iter() {
         println!("{}", elem);
     }
-    quick_sort(left_portion);
+    if left_portion.len() > 0 {
+        quick_sort(left_portion);
+    }
 }
 
 fn choose_pivot(data: &[i32]) -> i32 {
@@ -59,7 +65,7 @@ fn partition<'a>(data: &'a mut [i32], pivot_index: i32) -> i32 {
 
 
 fn main() {
-    let mut data_vec = vec![60, 10, 2, 35, 24];
+    let mut data_vec = vec![3, 20, 15, 1, 699, 342, 360, 134, 10348, 10, 13];
     for elem in data_vec.iter() {
         println!("{}", elem);
     }

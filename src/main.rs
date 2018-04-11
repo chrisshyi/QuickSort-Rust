@@ -1,4 +1,7 @@
 use std::vec::Vec;
+use std::fs::File;
+use std::io::BufReader;
+use std::io::prelude::*;
 
 fn quick_sort(data: &mut [i32]) {
     println!("length of data: {}", data.len());
@@ -65,6 +68,7 @@ fn partition<'a>(data: &'a mut [i32], pivot_index: i32) -> i32 {
 
 
 fn main() {
+    /*
     let mut data_vec = vec![3, 20, 15, 1, 699, 342, 360, 134, 10348, 10, 13];
     for elem in data_vec.iter() {
         println!("{}", elem);
@@ -74,8 +78,26 @@ fn main() {
     for elem in data_vec.iter() {
         println!("{}", elem);
     }
+    */
+    let file = File::open("QuickSort.txt").unwrap();
+    let mut data_vec: Vec<i32> = Vec::new();
+    let mut buf_reader = BufReader::new(file);
+    let mut line = String::new();
+    let mut num_bytes = buf_reader.read_line(&mut line).expect("line reading error");
+    while num_bytes > 0 {
+        println!("Bytes read: {}", num_bytes);
+
+        println!("line: {}", line);
+        line.pop(); // get rid of \n
+        line.pop(); // get rid of \r
+        println!("line: {}", line);
+
+        data_vec.push(line.parse::<i32>().unwrap());
+        line.clear();
+        num_bytes = buf_reader.read_line(&mut line).expect("line reading error");
+    }
+    for elem in data_vec.iter() {
+        println!("{}", elem);
+    }
+    println!("{} integers read", data_vec.len());
 }
-
-
-
-

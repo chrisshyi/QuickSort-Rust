@@ -85,12 +85,8 @@ fn main() {
     let mut line = String::new();
     let mut num_bytes = buf_reader.read_line(&mut line).expect("line reading error");
     while num_bytes > 0 {
-        println!("Bytes read: {}", num_bytes);
-
-        println!("line: {}", line);
         line.pop(); // get rid of \n
         line.pop(); // get rid of \r
-        println!("line: {}", line);
 
         data_vec.push(line.parse::<i32>().unwrap());
         line.clear();

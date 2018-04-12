@@ -11,7 +11,7 @@ fn quick_sort(data: &mut [i32], pivot_selection: fn(&[i32]) -> i32) -> i32 {
     }
     let pivot_index: i32 = pivot_selection(data);
     let final_pivot_index: i32 = partition(&mut *data, pivot_index);
-    num_comparisons += (data.len() as i32);
+    num_comparisons += (data.len() as i32 - 1);
     /*
     println!("After partitioning");
     for elem in data.iter() {

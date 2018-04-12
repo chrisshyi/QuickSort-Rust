@@ -3,49 +3,79 @@ use std::fs::File;
 use std::io::BufReader;
 use std::io::prelude::*;
 
-fn quick_sort(data: &mut [i32]) {
-    println!("length of data: {}", data.len());
+fn quick_sort(data: &mut [i32], pivot_selection: fn(&[i32]) -> i32) -> i32 {
+    //    println!("length of data: {}", data.len());
+    let mut num_comparisons = 0; // record the number of comparisons made by partitioning
     if data.len() == 1 {
-        return;
+        return num_comparisons; 
     }
-    let pivot_index: i32 = choose_pivot(data);
+    let pivot_index: i32 = pivot_selection(data);
     let final_pivot_index: i32 = partition(&mut *data, pivot_index);
+    num_comparisons += (data.len() as i32);
+    /*
     println!("After partitioning");
     for elem in data.iter() {
         println!("{}", elem);
     }
-    
+    */ 
     let (left_portion, right_portion) = data.split_at_mut(final_pivot_index as usize);
 
     if right_portion.len() > 1 {
         if let Some((_first, real_right_portion)) = right_portion.split_first_mut() {
+            /*
             println!("Right portion: ");
             for elem in real_right_portion.iter() {
                 println!("{}", elem);
             }
-            quick_sort(real_right_portion); // don't recurse if the right portion is empty 
+            */
+            num_comparisons += quick_sort(real_right_portion, pivot_selection); // don't recurse if the right portion is empty 
         }
     } else {
-        quick_sort(right_portion);
+        num_comparisons += quick_sort(right_portion, pivot_selection);
     }
+    /*
     println!("Left portion: ");
     for elem in left_portion.iter() {
         println!("{}", elem);
     }
+    */
     if left_portion.len() > 0 {
-        quick_sort(left_portion);
+        num_comparisons += quick_sort(left_portion, pivot_selection);
     }
+    num_comparisons
 }
-
-fn choose_pivot(data: &[i32]) -> i32 {
+/*
+ * Three ways of selecting a pivot below
+ */ 
+fn first_element_pivot(data: &[i32]) -> i32 {
     0
 }
 
-fn partition<'a>(data: &'a mut [i32], pivot_index: i32) -> i32 {
+fn last_element_pivot(data: &[i32]) -> i32 {
+    (data.len() - 1) as i32
+}
+
+fn median_pivot(data: &[i32]) -> i32 {
+    let first_elem = data[0];
+    let mid_elem = data[data.len() / 2];
+    let last_elem = data[data.len() - 1];
+    let mut temp_vec: Vec<i32> = vec![first_elem, mid_elem, last_elem];
+    temp_vec.sort();
+    if temp_vec[1] == first_elem {
+        0
+    } else if temp_vec[1] == mid_elem {
+        (data.len() / 2) as i32
+    } else {
+        (data.len() - 1) as i32
+    }
+}
+
+
+fn partition(data: &mut [i32], pivot_index: i32) -> i32 {
     if pivot_index != 0 {
         data.swap(pivot_index as usize, 0);
     }
-    println!("Pivot is {}", data[0]);
+    //  println!("Pivot is {}", data[0]);
     let mut i = 1;
     let mut larger_element_seen = false;
     for j in 1..data.len() {
@@ -68,17 +98,6 @@ fn partition<'a>(data: &'a mut [i32], pivot_index: i32) -> i32 {
 
 
 fn main() {
-    /*
-    let mut data_vec = vec![3, 20, 15, 1, 699, 342, 360, 134, 10348, 10, 13];
-    for elem in data_vec.iter() {
-        println!("{}", elem);
-    }
-    quick_sort(&mut data_vec[..]);
-
-    for elem in data_vec.iter() {
-        println!("{}", elem);
-    }
-    */
     let file = File::open("QuickSort.txt").unwrap();
     let mut data_vec: Vec<i32> = Vec::new();
     let mut buf_reader = BufReader::new(file);
@@ -93,4 +112,11 @@ fn main() {
         println!("{}", elem);
     }
     println!("{} integers read", data_vec.len());
+    let comparisons = quick_sort(&mut data_vec[..], median_pivot);
+    
+    for elem in data_vec.iter() {
+        println!("{}", elem);
+    }
+
+    println!("Number of comparisons: {}", comparisons);
 }
